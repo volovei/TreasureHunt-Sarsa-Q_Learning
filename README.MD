@@ -1,6 +1,6 @@
-# Frozen Lake RL
+# Treasure Hunt RL
 
-Este projeto implementa algoritmos de Aprendizado por Reforço (Q-Learning e SARSA) para treinar um agente no ambiente Frozen Lake.
+Este projeto implementa algoritmos de aprendizagem por Reforço (Q-Learning e SARSA) para treinar um agente no ambiente Treasure Hunt.
 
-## Estrutura do Projeto
+
 
