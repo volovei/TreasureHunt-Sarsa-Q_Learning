@@ -54,9 +54,10 @@ class TreasureHuntView:
         rect = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
         self.screen.blit(self.agent_image, rect)
 
-    def run(self, num_episodes=500, max_steps_per_episode=100):
+    def run(self, num_episodes=500, max_steps_per_episode=20):
         epsilon = 0.9
         learning_rate = 0.1
+        rewards_list = []
         for episode in range(num_episodes):
             state = self.env.reset()
             print(state)
@@ -64,7 +65,7 @@ class TreasureHuntView:
             current_row, current_column = location[0], location[1]
 
             if episode == 499:
-                timer = 1000
+                timer = 10
             else:
                 timer = 1
             
@@ -79,6 +80,7 @@ class TreasureHuntView:
                 pygame.time.delay(timer)
 
                 action = self.agent.next_action(epsilon, state)
+                env.step(action)
                 next_state, reward, done, info = self.env.step(action)
                 self.agent.update_q_table(state, action, reward, next_state, learning_rate, epsilon)
                 location = self.env.decode_state(next_state)
@@ -91,18 +93,21 @@ class TreasureHuntView:
                 state = next_state
                     
             if episode % 50 == 0:
-                    if epsilon > 0 and learning_rate < 1:
-                        epsilon -= 0.2
-                        learning_rate += 0.2    
+                    if epsilon > 0 and learning_rate < 1 and episode > 1:
+                        epsilon -= 0.1
+                        learning_rate += 0.1    
             if episode == 499:      
                 epsilon = 0
                 learning_rate = 1
+            
+            if total_reward > 0:
+                rewards_list.append((total_reward, episode))
 
             print(f"Episode {episode + 1}: Total Reward: {total_reward}")
             print (f"epsilon {epsilon}")
             print (f"learning_rate {learning_rate}")
         print (f"Q-Table: {self.agent.q_table}")
-
+        print (f"lista: {rewards_list}")
         pygame.quit()
 
 if __name__ == "__main__":

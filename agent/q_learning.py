@@ -2,7 +2,7 @@ import numpy as np
 from environment.treasure_hunt_env import TreasureHuntEnv
 import random
 
-class QLearningAgent: #não esta a funcionar bem, tenho de corrigir
+class QLearningAgent: #não esta a funcionar a 100%, acredito que seja na parte do table, tenho de corrigir
         def __init__(self,q_table, q_values, env):
             self.q_table = q_table
             self.q_values = q_values    

@@ -51,21 +51,21 @@ class TreasureHuntEnv(gym.Env):
             x += 1
 
         if x < 0 or x >= self.grid_size or y < 0 or y >= self.grid_size:
-            return self.encode_state(self.agent_pos), -10, True, {}
+            return self.encode_state(self.agent_pos), -20, True, {}
 
         self.agent_pos = [x, y]
         cell = self.grid[x, y]
 
         if cell == 'H':
-            return self.encode_state(self.agent_pos), -100, True, {}
+            return self.encode_state(self.agent_pos), -200, True, {}
         elif cell == 'T':
             self.collected_treasures += 1
             self.grid[x, y] = 'F'
-            reward = 30
+            reward = 40
         elif cell == 'G':
             self.collected_treasures += 1
             self.grid[x, y] = 'F'
-            reward = 60
+            reward = 100
         else:
             reward = -1
 
