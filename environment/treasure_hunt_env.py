@@ -57,15 +57,15 @@ class TreasureHuntEnv(gym.Env):
         cell = self.grid[x, y]
 
         if cell == 'H':
-            return self.encode_state(self.agent_pos), -20, True, {}
+            return self.encode_state(self.agent_pos), -100, True, {}
         elif cell == 'T':
             self.collected_treasures += 1
             self.grid[x, y] = 'F'
-            reward = 10
+            reward = 30
         elif cell == 'G':
             self.collected_treasures += 1
             self.grid[x, y] = 'F'
-            reward = 50
+            reward = 60
         else:
             reward = -1
 

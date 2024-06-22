@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from environment.treasure_hunt_env import TreasureHuntEnv
 from agent.random_agent import RandomAgent
+from agent.q_learning import QLearningAgent
 
 # Tamanho dos blocos do grid
 BLOCK_SIZE = 50
@@ -53,41 +54,57 @@ class TreasureHuntView:
         rect = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
         self.screen.blit(self.agent_image, rect)
 
-    def run(self, num_episodes=10, max_steps_per_episode=100):
-        clock = pygame.time.Clock()
-
+    def run(self, num_episodes=50, max_steps_per_episode=100):
         for episode in range(num_episodes):
             state = self.env.reset()
+            print(state)
+            location = self.env.decode_state(state)
+            current_row, current_column = location[0], location[1]
+            epsilon = 0.9
+            if episode == 49:
+                timer = 1000
+            else:
+                timer = 1
+            learning_rate = 0.1
             done = False
             total_reward = 0
 
             for step in range(max_steps_per_episode):
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        return
-
-                action = self.agent.choose_action(state)
-                next_state, reward, done, _ = self.env.step(action)
-                total_reward += reward
-                state = next_state
-
                 self.screen.fill((255, 255, 255))
                 self.draw_grid()
                 self.draw_agent()
                 pygame.display.flip()
+                pygame.time.delay(timer)
 
-                clock.tick(5)
-
-                if done:
-                    break
+                action = self.agent.next_action(current_row, current_column, epsilon)
+                next_state, reward, done, info = self.env.step(action)
+                self.agent.update_q_table(state, action, reward, next_state, learning_rate, epsilon)
+                location = self.env.decode_state(next_state)
+                total_reward += reward
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        return
+                state = next_state
+                    
+            if episode % 10 == 0:
+                    epsilon -= 0.2
+                    learning_rate += 0.2
+            if episode == 49:
+                
+                epsilon = 0
+                learning_rate = 1
 
             print(f"Episode {episode + 1}: Total Reward: {total_reward}")
+        print (f"Q-Table: {self.agent.q_table}")
 
         pygame.quit()
 
 if __name__ == "__main__":
     env = TreasureHuntEnv()
-    agent = RandomAgent(env.action_space)
+    q_table = np.zeros((env.observation_space.n, env.action_space.n))
+    q_values = np.zeros((env.grid_size, env.grid_size, env.action_space.n))
+    agent = QLearningAgent(q_table, q_values)
     view = TreasureHuntView(env, agent)
     view.run()
