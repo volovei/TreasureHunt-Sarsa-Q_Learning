@@ -54,9 +54,9 @@ class TreasureHuntView:
         rect = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
         self.screen.blit(self.agent_image, rect)
 
-    def run(self, num_episodes=1000, max_steps_per_episode=50):
+    def run(self, num_episodes=500, max_steps_per_episode=33): #50 normal onde 33 é o ideal por enquanto (isto quando 500 episodios)
         epsilon = 0.9
-        learning_rate = 0.4
+        learning_rate = 0.5 #0.5 deu melhor
         rewards_list = []
         for episode in range(num_episodes):
             state = self.env.reset()
@@ -86,9 +86,9 @@ class TreasureHuntView:
                 if done:
                     break
 
-            if episode % 200 == 0:
+            if episode % 100 == 0:
                 if epsilon > 0 and episode > 1:
-                    epsilon -= 0.15
+                    epsilon -= 0.2 #-0.15 onde 0.2 deu o melhor resultado por enquanto
                 if learning_rate > 0.2 and episode > 1:
                     learning_rate -= 0.1
                 elif learning_rate <= 0.2:

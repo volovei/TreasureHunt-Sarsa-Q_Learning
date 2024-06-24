@@ -8,6 +8,8 @@ class TreasureHuntEnv(gym.Env):
         self.grid_size = 10
         self.observation_space = spaces.Discrete(self.grid_size * self.grid_size)
         self.action_space = spaces.Discrete(4)
+        self.max_moves = 100  # Limite de movimentos
+        self.state_visit_count = np.zeros((self.grid_size, self.grid_size))  # Contador de visitas a cada estado
 
         self.reset()
 
@@ -28,6 +30,7 @@ class TreasureHuntEnv(gym.Env):
         self.agent_pos = [9, 9]
         self.collected_treasures = 0
         self.num_moves = 0
+        self.state_visit_count.fill(0)  # Reiniciar contador de visitas
 
         return self.encode_state(self.agent_pos)
 
@@ -60,25 +63,36 @@ class TreasureHuntEnv(gym.Env):
             x += 1
 
         if x < 0 or x >= self.grid_size or y < 0 or y >= self.grid_size:
-            return self.encode_state(self.agent_pos), -80, False, {} #-100 or -60
+            return self.encode_state(self.agent_pos), -80, False, {}
 
         self.agent_pos = [x, y]
         cell = self.grid[x, y]
 
+        # Atualizar visitas
+        self.state_visit_count[x, y] += 1
+
         if cell == 'H':
-            return self.encode_state(self.agent_pos), -40, False, {} #-50 or -30
+            return self.encode_state(self.agent_pos), -40, False, {}
         elif cell == 'T':
             self.collected_treasures += 1
             self.grid[x, y] = 'F'
-            reward = 20 - 0.2 * self.num_moves  # Penalidade de tempo # 20 - 0.2 * self.num_moves or 15 - 0.2 * self.num_moves
+            reward = 20 - 0.2 * self.num_moves  # Penalidade de tempo
         elif cell == 'G':
             self.collected_treasures += 1
             self.grid[x, y] = 'F'
-            reward = 40 - 0.2 * self.num_moves  # Penalidade de tempo # 40 - 0.2 * self.num_moves or 30 - 0.2 * self.num_moves
+            reward = 35 - 0.2 * self.num_moves  # Penalidade de tempo
         else:
             reward = -self.distance_to_nearest_treasure()
 
+        # Aplicar penalidade por visitas repetidas
+        visit_penalty = 5 * (self.state_visit_count[x, y] - 1)
+        reward -= visit_penalty
+
+        done = False
+
         if self.collected_treasures >= 5:
-            return self.encode_state(self.agent_pos), reward, True, {}
-        else:
-            return self.encode_state(self.agent_pos), reward, False, {}
+            done = True
+        elif self.num_moves >= self.max_moves:
+            done = True
+
+        return self.encode_state(self.agent_pos), reward, done, {}
