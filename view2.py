@@ -14,7 +14,7 @@ class TreasureHuntView:
     def __init__(self, env, agent):
         self.env = env
         self.agent = agent
-        self.window_size = (self.env.grid_size * BLOCK_SIZE, self.env.grid_size * BLOCK_SIZE)
+        self.window_size = (self.env.grid_size * BLOCK_SIZE, self.env.grid_size * BLOCK_SIZE + 50)
         self.screen = pygame.display.set_mode(self.window_size)
         pygame.display.set_caption("Treasure Hunt")
 
@@ -54,9 +54,15 @@ class TreasureHuntView:
         rect = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
         self.screen.blit(self.agent_image, rect)
 
-    def run(self, num_episodes=500, max_steps_per_episode=33): #50 normal onde 33 é o ideal por enquanto (isto quando 500 episodios)
+    def draw_status_bar(self, episode, total_reward, steps_remaining):
+        font = pygame.font.Font(None, 36)
+        status_text = f"Episode: {episode} | Reward: {total_reward} | Steps: {steps_remaining}"
+        status_surf = font.render(status_text, True, (0, 0, 0))
+        self.screen.blit(status_surf, (10, self.env.grid_size * BLOCK_SIZE + 10))
+
+    def run(self, num_episodes=1000, max_steps_per_episode=50):
         epsilon = 0.9
-        learning_rate = 0.5 #0.5 deu melhor
+        learning_rate = 0.4
         rewards_list = []
         for episode in range(num_episodes):
             state = self.env.reset()
@@ -67,6 +73,7 @@ class TreasureHuntView:
                 self.screen.fill((255, 255, 255))
                 self.draw_grid()
                 self.draw_agent()
+                self.draw_status_bar(episode, total_reward, max_steps_per_episode - step)
                 pygame.display.flip()
                 if episode == num_episodes - 1:
                     pygame.time.wait(300)
@@ -86,9 +93,9 @@ class TreasureHuntView:
                 if done:
                     break
 
-            if episode % 100 == 0:
+            if episode % 200 == 0:
                 if epsilon > 0 and episode > 1:
-                    epsilon -= 0.2 #-0.15 onde 0.2 deu o melhor resultado por enquanto
+                    epsilon -= 0.15
                 if learning_rate > 0.2 and episode > 1:
                     learning_rate -= 0.1
                 elif learning_rate <= 0.2:
