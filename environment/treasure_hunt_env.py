@@ -2,9 +2,9 @@ import gym
 from gym import spaces
 import numpy as np
 
-class TreasureHuntEnv_agent2(gym.Env):
+class TreasureHuntEnv(gym.Env):
     def __init__(self, grid_size=10, num_treasures=5, num_traps=5, seed=None):
-        super(TreasureHuntEnv_agent2, self).__init__()
+        super(TreasureHuntEnv, self).__init__()
         self.grid_size = grid_size
         self.num_treasures = num_treasures
         self.num_traps = num_traps

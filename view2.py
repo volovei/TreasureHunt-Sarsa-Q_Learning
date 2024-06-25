@@ -2,7 +2,6 @@ import pygame
 import numpy as np
 import matplotlib.pyplot as plt
 from environment.treasure_hunt_env import TreasureHuntEnv
-from environment.treasure_hunt_env import TreasureHuntEnv
 from agent.q_learning import QLearningAgent
 import random
 
