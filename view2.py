@@ -1,8 +1,8 @@
 import pygame
 import numpy as np
 import matplotlib.pyplot as plt
-from environment.treasure_hunt_env_agent1 import TreasureHuntEnv_agent1
-from environment.treasure_hunt_env_agent2 import TreasureHuntEnv_agent2
+from environment.treasure_hunt_env import TreasureHuntEnv
+from environment.treasure_hunt_env import TreasureHuntEnv
 from agent.q_learning import QLearningAgent
 import random
 
@@ -160,9 +160,9 @@ class TreasureHuntView:
         pygame.quit()
 
 if __name__ == "__main__":
-    seed_value = 30  # Definir uma semente para gerar o mesmo mapa
-    env1 = TreasureHuntEnv_agent2(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
-    env2 = TreasureHuntEnv_agent2(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
+    seed_value = 1  # Definir uma semente para gerar o mesmo mapa
+    env1 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
+    env2 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
 
     
     q_table1 = np.zeros((env1.observation_space.n, env1.action_space.n))

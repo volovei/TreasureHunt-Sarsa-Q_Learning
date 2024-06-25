@@ -120,8 +120,3 @@ class TreasureHuntEnv_agent2(gym.Env):
             done = True
 
         return self.encode_state(self.agent_pos), reward, done, {}
-
-    def render(self):
-        for row in self.grid:
-            print(" ".join(row))
-        print()
