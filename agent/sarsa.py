@@ -14,8 +14,7 @@ class SARSAAgent:
             return np.argmax(self.q_table[state])
     
     def update_q_table(self, state, action, reward, next_state, next_action, learning_rate, discount_rate):
-        next_state_encoded = self.env.encode_state(next_state)
-        self.q_table[state, action] += learning_rate * (reward + discount_rate * self.q_table[next_state_encoded, next_action] - self.q_table[state, action])
+        self.q_table[state, action] += learning_rate * (reward + discount_rate * self.q_table[next_state, next_action] - self.q_table[state, action])
 
     def get_shortest_path(self, start_row, start_column):
         current_row, current_column = start_row, start_column

@@ -1,13 +1,11 @@
 import pygame
 import numpy as np
-import matplotlib.pyplot as plt  
+import matplotlib.pyplot as plt
 from environment.treasure_hunt_env import TreasureHuntEnv
-from agent.sarsa import SARSAAgent  
+from agent.sarsa import SARSAAgent 
 
-# Tamanho dos blocos do grid
-BLOCK_SIZE = 50
+BLOCK_SIZE = 50 # o SARSA está muito fraco comparado ao Q-Learning
 
-# Inicialização do Pygame
 pygame.init()
 
 class TreasureHuntView:
@@ -18,7 +16,7 @@ class TreasureHuntView:
         self.screen = pygame.display.set_mode(self.window_size)
         pygame.display.set_caption("Treasure Hunt")
 
-        # Carregar imagens 
+        # Carregar imagens
         self.ground_image = pygame.image.load("assets/ground.png")
         self.trap_image = pygame.image.load("assets/trap.png")
         self.small_treasure_image = pygame.image.load("assets/small_treasure.png")
@@ -50,14 +48,13 @@ class TreasureHuntView:
                 pygame.draw.rect(self.screen, (0, 0, 0), rect, 1)
 
     def draw_agent(self):
-        x, y = self.env.agent_pos
+        x, y = self.agent.env.agent_pos
         rect = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
         self.screen.blit(self.agent_image, rect)
 
-    def run(self, num_episodes=100, max_steps_per_episode=500):
+    def run(self, num_episodes=500, max_steps_per_episode=33):  # 50 normal onde 33 é o ideal por enquanto (isto quando 500 episodios)
         epsilon = 0.9
-        learning_rate = 0.4
-        discount_rate = 0.6
+        learning_rate = 0.5  # 0.5 deu melhor
         rewards_list = []
         for episode in range(num_episodes):
             state = self.env.reset()
@@ -71,40 +68,40 @@ class TreasureHuntView:
                 self.draw_agent()
                 pygame.display.flip()
                 if episode == num_episodes - 1:
-                    pygame.time.wait(500)
-                else:
-                    pygame.time.wait(1)
+                    pygame.time.wait(300)
 
                 next_state, reward, done, info = self.env.step(action)
                 next_action = self.agent.next_action(epsilon, next_state)
-                self.agent.update_q_table(state, action, reward, next_state, next_action, learning_rate, discount_rate)
+                self.agent.update_q_table(state, action, reward, next_state, next_action, learning_rate, discount_rate=0.6)
                 total_reward += reward
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         return
-                    
-                state, action = next_state, next_action
-                
-            if episode % 20 == 0: 
+
+                state = next_state
+                action = next_action
+
+                if done:
+                    break
+
+            if episode % 100 == 0:
                 if epsilon > 0 and episode > 1:
-                    epsilon -= 0.15
+                    epsilon -= 0.2  # -0.15 onde 0.2 deu o melhor resultado por enquanto
                 if learning_rate > 0.2 and episode > 1:
                     learning_rate -= 0.1
-                elif learning_rate <= 0.2:  
+                elif learning_rate <= 0.2:
                     learning_rate = 0.1
 
-            if episode == num_episodes - 1:      
+            if episode == num_episodes - 1:
                 epsilon = 0
-            
-            rewards_list.append(total_reward)  # recompensa total do episódio para a lista
 
-            print(f"Episode {episode + 1}: Total Reward: {total_reward}")
-            print(f"Epsilon: {epsilon}")
-            print(f"Learning Rate: {learning_rate}")
-        
-        # Gráfico de linha das recompensas
+            rewards_list.append(total_reward)
+            print(f"Episodio: {episode} - Total Reward: {total_reward}")
+        print(f"Episodio: Last - Total Reward: {total_reward}")
+
+        # recompensas
         plt.plot(range(1, num_episodes + 1), rewards_list, marker='o', linestyle='-', color='b', label='Rewards per Episode')
         plt.xlabel('Episodes')
         plt.ylabel('Total Reward')
@@ -118,6 +115,6 @@ class TreasureHuntView:
 if __name__ == "__main__":
     env = TreasureHuntEnv()
     q_table = np.zeros((env.observation_space.n, env.action_space.n))
-    agent = SARSAAgent(q_table, env)
+    agent = SARSAAgent(q_table, env)  # Alteração para o agente SARSA
     view = TreasureHuntView(env, agent)
     view.run()

@@ -16,6 +16,10 @@ class QLearningAgent:
     def update_q_table(self, state, action, reward, next_state, learning_rate, discount_rate):
         self.q_table[state, action] += learning_rate * (reward + discount_rate * np.max(self.q_table[next_state]) - self.q_table[state, action])
 
+    
+    def update_best_q_table(self, q_table):
+        self.q_table = q_table
+    
     def get_shortest_path(self, start_row, start_column):
         current_row, current_column = start_row, start_column
         shortest_path = [[current_row, current_column]]
