@@ -127,7 +127,7 @@ class TreasureHuntView:
                 if done1 or done2:
                     break
 
-            if episode % 100 == 0:
+            if episode % 200 == 0:
                 if epsilon > 0 and episode > 1:
                     epsilon -= 0.2
                 if learning_rate > 0.2 and episode > 1:

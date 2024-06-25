@@ -1,0 +1,5 @@
+-  Embelezar interface
+    -  Imagem de Background
+-  Adicionar Menu inicial (?)
+-  Ajustar rewards
+-  Randomizar mapa a cada inicialização do view2.py
