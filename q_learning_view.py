@@ -188,9 +188,9 @@ class TreasureHuntView:
         pygame.quit()
 
 if __name__ == "__main__":
-    seed_value = 4  # Definir uma semente para gerar o mesmo mapa para os dois agentes
-    env1 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
-    env2 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
+    seed_value = 5  # Definir uma semente para gerar o mesmo mapa para os dois agentes
+    env1 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=20, seed=seed_value)
+    env2 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=20, seed=seed_value)
 
     
     q_table1 = np.zeros((env1.observation_space.n, env1.action_space.n))
