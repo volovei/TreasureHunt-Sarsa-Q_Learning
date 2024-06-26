@@ -79,11 +79,15 @@ class TreasureHuntView:
         rect2 = pygame.Rect((y2 + self.env1.grid_size) * BLOCK_SIZE, x2 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
         self.screen.blit(self.agent_image, rect2)
 
-    def run(self, num_episodes=500, max_steps_per_episode=50):
+    def run(self, num_episodes=1000, max_steps_per_episode=50):
         epsilon = 0.9
         learning_rate = 0.5
         rewards_list_agent1 = []
         rewards_list_agent2 = []
+        total_reward1_sum = 0
+        total_reward2_sum = 0
+        Best_q_table_1 = 0
+        Best_q_table_2 = 0
 
         for episode in range(num_episodes):
             state1 = self.env1.reset()
@@ -115,6 +119,27 @@ class TreasureHuntView:
                 total_reward1 += reward1
                 total_reward2 += reward2
 
+                total_reward1_sum += reward1
+                total_reward2_sum += reward2
+
+                if episode % 50 ==0:
+                    if total_reward1_sum > total_reward2_sum and total_reward1_sum < 0:
+                        Best_q_table_1 += 1
+                    elif total_reward1_sum < total_reward2_sum and total_reward2_sum < 0:
+                        Best_q_table_2 += 1
+                    elif total_reward1_sum > total_reward2_sum and total_reward1_sum > 0:
+                        self.agent2.update_best_q_table(self.agent1.q_table)
+                        Best_q_table_2 += 1
+                    elif total_reward1_sum < total_reward2_sum and total_reward2_sum > 0:
+                        self.agent1.update_best_q_table(self.agent2.q_table)
+                        Best_q_table_1 += 1
+                    else:
+                        Best_q_table_1 += 1
+                        Best_q_table_2 += 1
+
+                        
+               
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
@@ -126,13 +151,23 @@ class TreasureHuntView:
                 if done1 or done2:
                     break
 
-            if episode % 200 == 0:
+            if episode % 100 == 0:
                 if epsilon > 0 and episode > 1:
-                    epsilon -= 0.2
-                if learning_rate > 0.2 and episode > 1:
+                    epsilon -= 0.1
+            if learning_rate > 0.2 and episode > 1 and episode % 100 == 0:
                     learning_rate -= 0.1
-                elif learning_rate <= 0.2:
+            elif learning_rate <= 0.2:
                     learning_rate = 0.1
+
+            if episode % 200 == 0:
+                if Best_q_table_1 < Best_q_table_2:
+                    self.agent1.update_best_q_table(self.agent2.q_table)
+                    total_reward1_sum = 0
+                    total_reward2_sum = 0
+                else:
+                    self.agent2.update_best_q_table(self.agent1.q_table)
+                    total_reward1_sum = 0
+                    total_reward2_sum = 0
 
             if episode == num_episodes - 1:
                 epsilon = 0
@@ -159,7 +194,7 @@ class TreasureHuntView:
         pygame.quit()
 
 if __name__ == "__main__":
-    seed_value = 1  # Definir uma semente para gerar o mesmo mapa
+    seed_value = 67  # Definir uma semente para gerar o mesmo mapa
     env1 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
     env2 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=5, seed=seed_value)
 

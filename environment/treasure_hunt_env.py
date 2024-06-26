@@ -37,7 +37,7 @@ class TreasureHuntEnv(gym.Env):
         return [state // self.grid_size, state % self.grid_size]
 
     def generate_random_grid(self):
-        grid = np.full((self.grid_size, self.grid_size), 'F', dtype=str)  # Alteração aqui para dtype=str
+        grid = np.full((self.grid_size, self.grid_size), 'F', dtype=str) 
 
         # Posicionar tesouros
         positions = np.random.choice(self.grid_size * self.grid_size, size=self.num_treasures + self.num_traps, replace=False)
@@ -52,20 +52,11 @@ class TreasureHuntEnv(gym.Env):
             x, y = pos // self.grid_size, pos % self.grid_size
             grid[x, y] = 'H'
 
-        # Posicionar grande tesouro
+        # Posicionar best tesouro
         pos_g = np.random.choice(self.grid_size * self.grid_size, size=1, replace=False)
         grid[pos_g // self.grid_size, pos_g % self.grid_size] = 'G'
 
         return grid
-
-    def distance_to_nearest_treasure(self):
-        distances = []
-        for x in range(self.grid_size):
-            for y in range(self.grid_size):
-                if self.grid[x, y] in ['T', 'G']:
-                    distance = abs(self.agent_pos[0] - x) + abs(self.agent_pos[1] - y)
-                    distances.append(distance)
-        return min(distances) if distances else 0
 
     def step(self, action):
         self.num_moves += 1
@@ -81,7 +72,7 @@ class TreasureHuntEnv(gym.Env):
             x += 1
 
         if x < 0 or x >= self.grid_size or y < 0 or y >= self.grid_size:
-            return self.encode_state(self.agent_pos), -80, False, {}  # Penalidade por sair do grid
+            return self.encode_state(self.agent_pos), -80, False, {}  # Penalidade por sair fora do mapa
 
         self.agent_pos = [x, y]
         cell = self.grid[x, y]
@@ -90,7 +81,7 @@ class TreasureHuntEnv(gym.Env):
         self.state_visit_count[x, y] += 1
 
         # Penalidade inicial baseada na distância ao tesouro mais próximo
-        reward = -self.distance_to_nearest_treasure()
+        reward = 0
 
         # Aplicar penalidade por visitas repetidas
         visit_penalty = 5 * (self.state_visit_count[x, y] - 1)  # Penalidade de 5 pontos por visita repetida
@@ -106,7 +97,7 @@ class TreasureHuntEnv(gym.Env):
         elif cell == 'G':
             self.collected_treasures += 1
             self.grid[x, y] = 'F'
-            reward += 35 - 0.2 * self.num_moves  # Recompensa por coletar o grande tesouro
+            reward += 35 - 0.2 * self.num_moves  # Recompensa por coletar o best tesouro
             self.moves_since_last_treasure = 0  
         else:
             self.moves_since_last_treasure += 1
@@ -116,7 +107,8 @@ class TreasureHuntEnv(gym.Env):
             reward -= 4  # Penalidade por 10 movimentos sem encontrar tesouros
 
         done = False
-        if self.collected_treasures >= self.num_treasures + 1:  # +1 para contar o grande tesouro
+        if self.collected_treasures >= self.num_treasures + 1:  # +1 para contar o best tesouro
             done = True
 
         return self.encode_state(self.agent_pos), reward, done, {}
+
