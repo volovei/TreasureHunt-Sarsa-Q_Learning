@@ -1,0 +1,28 @@
+120 score - best reward - 67 seed (one view)
+
+33 score - best reward - 67 seed (second view)
+
+
+117.2 score - best reward - 1 seed (one view)
+
+119 score - best reward - 1 seed (second view)
+
+
+-28 score - best reward - 2 seed (one view)
+
+109 score - best reward - 2 seed (second view)
+
+
+115 score - best reward - 3 seed (second view)
+
+112 score - best reward - 4 seed (second view)
+
+115 score - best reward - 5 seed (second view)
+
+
+
+7112002 - corrigir encontrar soluções
+
+14112003
+
+Quando aumento traps temos um problema -  se ele tiver de voltar ao lugar anterior para apanhar uma recompensa ele prefere não pegar a recompensa

@@ -84,6 +84,7 @@ class TreasureHuntView:
         learning_rate = 0.5
         rewards_list_agent1 = []
         rewards_list_agent2 = []
+        q_table_list = []
         total_reward1_sum = 0
         total_reward2_sum = 0
         Best_q_table_1 = 0
@@ -96,8 +97,6 @@ class TreasureHuntView:
             total_reward2 = 0
             done1 = False
             done2 = False
-            if episode == num_episodes - 1:
-                pygame.time.wait(300)
 
             for step in range(max_steps_per_episode):
                 self.screen.fill((255, 255, 255))
@@ -136,9 +135,9 @@ class TreasureHuntView:
 
             if episode > 800:
                 if episode % 50 ==0:
-                    if total_reward1_sum > total_reward2_sum and total_reward1_sum < 0:
+                    if total_reward1_sum > total_reward2_sum:
                         Best_q_table_1 += 1
-                    elif total_reward1_sum < total_reward2_sum and total_reward2_sum < 0:
+                    elif total_reward1_sum < total_reward2_sum:
                         Best_q_table_2 += 1
                     else:
                         Best_q_table_1 += 1
@@ -156,6 +155,7 @@ class TreasureHuntView:
                   
 
             if episode % 100 == 0:
+                q_table_list.append(self.agent1.q_table)
                 if epsilon > 0 and episode > 1:
                     epsilon -= 0.1
             if learning_rate > 0.2 and episode > 1 and episode % 100 == 0:
@@ -188,9 +188,14 @@ class TreasureHuntView:
         pygame.quit()
 
 if __name__ == "__main__":
-    seed_value = 5  # Definir uma semente para gerar o mesmo mapa para os dois agentes
-    env1 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=20, seed=seed_value)
-    env2 = TreasureHuntEnv(grid_size=10, num_treasures=5, num_traps=20, seed=seed_value)
+    seed_value = 199  # Definir uma semente para gerar o mesmo mapa para os dois agentes
+    grid_size = 10 # Tamanho do grid
+    num_treasures = 5 # Número de tesouros
+    num_traps = 5 # Número de armadilhas
+    #agent_position = random.randint(0, grid_size - 1), random.randint(0, grid_size - 1)
+    agent_position = 9,9 
+    env1 = TreasureHuntEnv(grid_size=grid_size, num_treasures=num_treasures, num_traps=num_traps, seed=seed_value, agent_position=agent_position)
+    env2 = TreasureHuntEnv(grid_size=grid_size, num_treasures=num_treasures, num_traps=num_traps, seed=seed_value, agent_position=agent_position)
 
     
     q_table1 = np.zeros((env1.observation_space.n, env1.action_space.n))

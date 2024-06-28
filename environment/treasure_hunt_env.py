@@ -1,14 +1,16 @@
+import random
 import gym
 from gym import spaces
 import numpy as np
 
 class TreasureHuntEnv(gym.Env):
-    def __init__(self, grid_size=10, num_treasures=5, num_traps=5, seed=None):
+    def __init__(self, grid_size=10, num_treasures=5, num_traps=5, seed=1, agent_position=[9, 9]):
         super(TreasureHuntEnv, self).__init__()
         self.grid_size = grid_size
         self.num_treasures = num_treasures
         self.num_traps = num_traps
         self.seed_value = seed
+        self.agent_pos = agent_position
 
         self.observation_space = spaces.Discrete(self.grid_size * self.grid_size)
         self.action_space = spaces.Discrete(4)
@@ -22,7 +24,6 @@ class TreasureHuntEnv(gym.Env):
             np.random.seed(self.seed_value)
 
         self.grid = self.generate_random_grid()
-        self.agent_pos = [self.grid_size - 1, self.grid_size - 1]  # Posição inicial
         self.collected_treasures = 0
         self.num_moves = 0
         self.moves_since_last_treasure = 0
@@ -80,12 +81,14 @@ class TreasureHuntEnv(gym.Env):
         # Atualizar visitas
         self.state_visit_count[x, y] += 1
 
-        # Penalidade inicial baseada na distância ao tesouro mais próximo
         reward = 0
 
         # Aplicar penalidade por visitas repetidas
-        visit_penalty = 5 * (self.state_visit_count[x, y] - 1)  # Penalidade de 5 pontos por visita repetida
+        visit_penalty = 5 * (self.state_visit_count[x, y] - 1) 
         reward -= visit_penalty
+        
+        if self.state_visit_count[x, y] == 1:
+            reward += 1  # Recompensa por explorar uma nova célula
 
         if cell == 'H':
             reward -= 40  # Penalidade por cair em uma armadilha
@@ -104,8 +107,8 @@ class TreasureHuntEnv(gym.Env):
 
         # Penalidade por passar muito tempo sem encontrar tesouros
         if self.moves_since_last_treasure > 10:
-            reward -= 4  # Penalidade por 10 movimentos sem encontrar tesouros
-
+            reward -= 4
+            
         done = False
         if self.collected_treasures >= self.num_treasures + 1:  # +1 para contar o best tesouro
             done = True
