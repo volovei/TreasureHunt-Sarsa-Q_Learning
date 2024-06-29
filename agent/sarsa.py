@@ -4,7 +4,7 @@ import random
 
 class SARSAAgent: 
     def __init__(self, q_table, env):
-        self.q_table = q_table.copy()
+        self.q_table = q_table
         self.env = env
         
     def next_action(self, epsilon, state):
@@ -15,6 +15,9 @@ class SARSAAgent:
     
     def update_q_table(self, state, action, reward, next_state, next_action, learning_rate, discount_rate):
         self.q_table[state, action] += learning_rate * (reward + discount_rate * self.q_table[next_state, next_action] - self.q_table[state, action])
+
+    def update_best_q_table(self, q_table):
+        self.q_table = q_table
 
     def get_shortest_path(self, start_row, start_column):
         current_row, current_column = start_row, start_column
