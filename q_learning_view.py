@@ -17,7 +17,7 @@ class TreasureHuntView:
         self.agent2 = agent2
         self.window_size = (self.env1.grid_size * BLOCK_SIZE * 2, self.env1.grid_size * BLOCK_SIZE)
         self.screen = pygame.display.set_mode(self.window_size)
-        pygame.display.set_caption("Treasure Hunt")
+        pygame.display.set_caption("Treasure Hunt - Q_Learning")
 
         # Carregar imagens
         self.ground_image = pygame.image.load("assets/ground.png")
