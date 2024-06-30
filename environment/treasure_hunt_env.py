@@ -6,7 +6,8 @@ import numpy as np
 class TreasureHuntEnv(gym.Env):
     def __init__(self, grid_size=10, num_treasures=5, num_traps=5, seed=1):
         super(TreasureHuntEnv, self).__init__()
-        self.grid_size = grid_size
+        self.grid_size = grid_size 
+        self.grid_size_without_borders = grid_size - 1 
         self.num_treasures = num_treasures
         self.num_traps = num_traps
         self.seed_value = seed
@@ -38,26 +39,34 @@ class TreasureHuntEnv(gym.Env):
         return [state // self.grid_size, state % self.grid_size]
 
     def generate_random_grid(self):
-        grid = np.full((self.grid_size, self.grid_size), 'F', dtype=str) 
+        grid = np.full((self.grid_size_without_borders, self.grid_size_without_borders), 'F', dtype=str)
+        grid_with_borders = np.full((self.grid_size, self.grid_size), 'F', dtype=str)
 
         # Posicionar tesouros
-        positions = np.random.choice(self.grid_size * self.grid_size, size=self.num_treasures + self.num_traps, replace=False)
+        positions = np.random.choice(self.grid_size_without_borders * self.grid_size_without_borders, size=self.num_treasures + self.num_traps, replace=False)
         treasure_positions = positions[:self.num_treasures]
         trap_positions = positions[self.num_treasures:]
 
         for pos in treasure_positions:
-            x, y = pos // self.grid_size, pos % self.grid_size
+            x, y = pos // self.grid_size_without_borders, pos % self.grid_size_without_borders
             grid[x, y] = 'T'
 
         for pos in trap_positions:
-            x, y = pos // self.grid_size, pos % self.grid_size
+            x, y = pos // self.grid_size_without_borders, pos % self.grid_size_without_borders
             grid[x, y] = 'H'
 
         # Posicionar best tesouro
-        pos_g = np.random.choice(self.grid_size * self.grid_size, size=1, replace=False)
-        grid[pos_g // self.grid_size, pos_g % self.grid_size] = 'G'
+        pos_g = np.random.choice(self.grid_size_without_borders * self.grid_size_without_borders, size=1, replace=False)
+        grid[pos_g // self.grid_size_without_borders, pos_g % self.grid_size_without_borders] = 'G'
 
-        return grid
+        # Adicionar grid ao grid_with_borders
+        start_x = (self.grid_size - self.grid_size_without_borders) // 2
+        start_y = (self.grid_size - self.grid_size_without_borders) // 2
+
+        grid_with_borders[start_x:start_x + self.grid_size_without_borders, start_y:start_y + self.grid_size_without_borders] = grid
+
+        return grid_with_borders
+
 
     def step(self, action):
         self.num_moves += 1

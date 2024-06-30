@@ -25,6 +25,8 @@ class TreasureHuntView:
         self.small_treasure_image = pygame.image.load("assets/small_treasure.png")
         self.big_treasure_image = pygame.image.load("assets/big_treasure.png")
         self.agent_image = pygame.image.load("assets/agent.png")
+        self.border_agent1_image = pygame.image.load("assets/border.png")
+        self.border_agent2_image = pygame.image.load("assets/border.png")
 
         # Redimensionar imagens
         self.ground_image = pygame.transform.scale(self.ground_image, (BLOCK_SIZE, BLOCK_SIZE))
@@ -32,41 +34,55 @@ class TreasureHuntView:
         self.small_treasure_image = pygame.transform.scale(self.small_treasure_image, (BLOCK_SIZE, BLOCK_SIZE))
         self.big_treasure_image = pygame.transform.scale(self.big_treasure_image, (BLOCK_SIZE, BLOCK_SIZE))
         self.agent_image = pygame.transform.scale(self.agent_image, (BLOCK_SIZE, BLOCK_SIZE))
+        self.border_agent1_image = pygame.transform.scale(self.border_agent1_image, ((self.env1.grid_size + 0)  * BLOCK_SIZE, (self.env1.grid_size + 0) * BLOCK_SIZE))
+        self.border_agent2_image = pygame.transform.scale(self.border_agent2_image, ((self.env2.grid_size + 0) * BLOCK_SIZE, (self.env2.grid_size + 0) * BLOCK_SIZE))
 
     def draw_grid(self):
         for x in range(0, self.env1.grid_size):
             for y in range(0, self.env1.grid_size):
-                rect1 = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-                rect2 = pygame.Rect((y + self.env1.grid_size) * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-                cell1 = self.env1.grid[x, y]
-                cell2 = self.env2.grid[x, y]
-                
-                # Desenhar ambiente 1
-                if cell1 == 'S':
-                    self.screen.blit(self.ground_image, rect1)
-                elif cell1 == 'H':
-                    self.screen.blit(self.trap_image, rect1)
-                elif cell1 == 'T':
-                    self.screen.blit(self.small_treasure_image, rect1)
-                elif cell1 == 'G':
-                    self.screen.blit(self.big_treasure_image, rect1)
+                if x >= 1 and y >= 1 and x <= self.env1.grid_size - 1 and y <= self.env1.grid_size - 1:
+                    rect1 = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
+                    rect2 = pygame.Rect((y + self.env1.grid_size) * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
+                    cell1 = self.env1.grid[x, y]
+                    cell2 = self.env2.grid[x, y]
+                    
+                    # Desenhar ambiente 1
+                    if cell1 == 'S':
+                        self.screen.blit(self.ground_image, rect1)
+                    elif cell1 == 'H':
+                        self.screen.blit(self.trap_image, rect1) #acrescentar floor por baixo de todos os tesouros e traps
+                    elif cell1 == 'T':
+                        self.screen.blit(self.small_treasure_image, rect1)
+                    elif cell1 == 'G':
+                        self.screen.blit(self.big_treasure_image, rect1)
+                    else:
+                        self.screen.blit(self.ground_image, rect1)
+                    
+                    # Desenhar ambiente 2
+                    if cell2 == 'S':
+                        self.screen.blit(self.ground_image, rect2)
+                    elif cell2 == 'H':
+                        self.screen.blit(self.trap_image, rect2)
+                    elif cell2 == 'T':
+                        self.screen.blit(self.small_treasure_image, rect2)
+                    elif cell2 == 'G':
+                        self.screen.blit(self.big_treasure_image, rect2)
+                    else:
+                        self.screen.blit(self.ground_image, rect2)
+                    
+                    pygame.draw.rect(self.screen, (0, 0, 0), rect1, 1)
+                    pygame.draw.rect(self.screen, (0, 0, 0), rect2, 1)
                 else:
-                    self.screen.blit(self.ground_image, rect1)
-                
-                # Desenhar ambiente 2
-                if cell2 == 'S':
-                    self.screen.blit(self.ground_image, rect2)
-                elif cell2 == 'H':
-                    self.screen.blit(self.trap_image, rect2)
-                elif cell2 == 'T':
-                    self.screen.blit(self.small_treasure_image, rect2)
-                elif cell2 == 'G':
-                    self.screen.blit(self.big_treasure_image, rect2)
-                else:
-                    self.screen.blit(self.ground_image, rect2)
-                
-                pygame.draw.rect(self.screen, (0, 0, 0), rect1, 1)
-                pygame.draw.rect(self.screen, (0, 0, 0), rect2, 1)
+                    self.screen.blit(self.ground_image, (y * BLOCK_SIZE, x * BLOCK_SIZE))
+                    self.screen.blit(self.ground_image, ((y + self.env1.grid_size) * BLOCK_SIZE, x * BLOCK_SIZE))
+
+        # Desenhar linha preta separando os dois ambientes
+        pygame.draw.line(self.screen, (0, 0, 0), (self.env1.grid_size * BLOCK_SIZE, 0), 
+                         (self.env1.grid_size * BLOCK_SIZE, self.env1.grid_size * BLOCK_SIZE), 5)
+
+        # Desenhar bordas decorativas
+        self.screen.blit(self.border_agent1_image, (0, 0))
+        self.screen.blit(self.border_agent2_image, (self.env1.grid_size * BLOCK_SIZE, 0))
 
     def draw_agents(self):
         # Desenhar agente 1
@@ -216,7 +232,7 @@ class TreasureHuntView:
         pygame.quit()
 
 if __name__ == "__main__":
-    seed_value = 199  # Definir uma semente para gerar o mesmo mapa para os dois agentes
+    seed_value = 1  # Definir uma semente para gerar o mesmo mapa para os dois agentes
     grid_size = 10 # Tamanho do grid
     num_treasures = 5 # Número de tesouros
     num_traps = 5 # Número de armadilhas
