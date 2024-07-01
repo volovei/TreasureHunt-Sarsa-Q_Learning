@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Play</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #8B4513;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+        }
+        h2 {
+            font-size: 24px;
+            border-bottom: 2px solid #8B4513;
+            padding-bottom: 5px;
+        }
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 80%;
+            height: auto;
+        }
+        p, li {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        strong {
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>How Pipe Hunt Works</h1>
+        <img src="assets/pipe.gif" alt="Gameplay of Pipe Hunt">
+        <p>Welcome to Pipe Hunt! This guide will help you understand the basics of how this RL game works.</p>
+        <h2>Objective</h2>
+        <p>The agent goal is to navigate through the map to find the hidden treasures that contains smoking pipes. 
+            Within the map, the agent will encounter traps and two types of treasures, one with one pipe and the other with two pipes.
+            The agent must avoid traps and collect all the treasures to win the game.
+        </p>
+        <h2>Rewards</h2>
+        <img src="assets/treasure.gif" alt="Rewards in Pipe Hunt">
+        <p>In Pipe Hunt, rewards are designed to encourage strategic exploration and efficient Pipe collection while avoiding traps. Here's how the reward system works:</p>
+            <ul>
+                <li>Exploring a new cell: <strong>+1 point</strong> for each new cell visited, promoting exploration.</li>
+                <li>Finding a treasure (1 Pipe): <strong>+20 points</strong>, minus 0.2 points for each move made, incentivizing quick Pipe collection.</li>
+                <li>Finding the best treasure (2 Pipes): <strong>+35 points</strong>, also reduced by 0.2 points for each move, rewarding the discovery of 2 Pipes.</li>
+                <li>Falling into a trap: <strong>-40 points</strong>, penalizing risky or unplanned moves.</li>
+                <li>Revisiting cells: A penalty starting from <strong>-5 points</strong> for each subsequent visit to the same cell, discouraging repetitive paths.</li>
+                <li>Leaving the map boundaries: <strong>-80 points</strong>, preventing escape from the designated play area.</li>
+                <li>Spending too many moves without finding a treasure: <strong>-4 points</strong> after 10 moves without finding a Pipe, encouraging efficient navigation.</li>
+            </ul>
+        <h2>Options</h2>
+        <img src="assets/smoke.gif" alt="Options in Pipe Hunt">
+        <p>There are several options available to customize the game environment and the agent's behavior:</p>
+            <ul>
+                <li><strong>Grid size:</strong> The size of the map can be adjusted to increase or decrease the challenge level.</li>
+                <li><strong>Number of traps:</strong> The number of traps can be set to increase the difficulty of the game.</li>
+                <li><strong>Number of treasures:</strong> The number of treasures can be adjusted to control the game's duration and complexity.</li>
+                <li><strong>Seed value:</strong> The seed value can be set to generate a specific map configuration.</li>
+                <li><strong>Agent Type:</strong> The agent can be set to either a Sarsa Agent or a Q-Learning Agent.</li>
+            </ul> 
+        <h2>Important Functions</h2>
+        <p>There are several functions available to interact with the game environment and the agent:</p>
+            <ul>
+                <li> <strong>Reset:</strong> Resets the game environment and the agent's position.</li>
+                <li> <strong>Generate Random Grid:</strong> Generates a new random map configuration.</li>
+                <li> <strong>Step:</strong> Moves the agent one step in the environment and calculates the reward in that state.</li>
+                <li> <strong>Draw Grid:</strong> Draws the current state of the environment, including the agents and treasures.</li>
+                <li> <strong>Run:</strong> Runs the agent in the environment until the game is over or the maximum number of episodes is reached.</li>
+            </ul>
+        <h2>Good Luck and Have Fun!</h2>
+    </div>
+</body>
+</html>

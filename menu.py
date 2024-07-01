@@ -1,6 +1,8 @@
 import pygame
 import subprocess
 from PIL import Image
+import webbrowser  
+
 
 pygame.init()
 
@@ -41,32 +43,45 @@ def main_menu():
         screen.blit(gif_frames[current_frame], (250, 0))
         current_frame = (current_frame + 1) % gif_frame_count
 
-        title_text = font.render("Treasure Hunt", True,(255,255,255), (0, 0, 0))
+        title_text = font.render("Pipe Hunt", True,(255,255,255), (0, 0, 0))
         play_qlearning_text = font_small.render("Play with Q-Learning", True, (255,255,255), (0, 0, 0))
         play_sarsa_text = font_small.render("Play with SARSA", True,(255,255,255), (0, 0, 0))
         quit_text = font_small.render("Quit", True,(255,255,255), (0, 0, 0))
+        how_to_text = font_small.render("How to Pipe Hunt", True, (255,255,255), (0, 0, 0))
+        options = font_small.render("Options", True, (255,255,255), (0, 0, 0))
 
-        screen.blit(title_text, (150, 150))
-        screen.blit(play_qlearning_text, (150, 300))
-        screen.blit(play_sarsa_text, (150, 400))
+        screen.blit(how_to_text, (150, 450))
+        screen.blit(title_text, (150, 100))
+        screen.blit(play_qlearning_text, (150, 200))
+        screen.blit(play_sarsa_text, (150, 300))
         screen.blit(quit_text, (150, 500))
+        screen.blit(options, (150, 400))
 
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        # Coordenadas ajustadas para os botões
-        if 150 <= mouse[0] <= 450 and 300 <= mouse[1] <= 350:
+        # Correct the mouse position check for the "How to Play" button
+        if 150 <= mouse[0] <= 450 and 450 <= mouse[1] <= 500:  
+            if click[0] == 1:
+                webbrowser.open("how_to_play.html") 
+        
+        if 150 <= mouse[0] <= 450 and 350 <= mouse[1] <= 400:
+            if click[0] == 1:
+                
+
+        if 150 <= mouse[0] <= 450 and 200 <= mouse[1] <= 250:
             if click[0] == 1:
                 subprocess.run(["python", "q_learning_view.py"])
         
-        if 150 <= mouse[0] <= 450 and 400 <= mouse[1] <= 450:
+        if 150 <= mouse[0] <= 450 and 300 <= mouse[1] <= 350:
             if click[0] == 1:
                 subprocess.run(["python", "sarsa_view.py"])
 
-        if 150 <= mouse[0] <= 450 and 500 <= mouse[1] <= 550:
+        if 150 <= mouse[0] <= 450 and 400 <= mouse[1] <= 550:
             if click[0] == 1:
                 pygame.quit()
                 quit()
+                
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
