@@ -64,9 +64,6 @@ def main_menu():
         if 150 <= mouse[0] <= 450 and 450 <= mouse[1] <= 500:  
             if click[0] == 1:
                 webbrowser.open("how_to_play.html") 
-        
-        if 150 <= mouse[0] <= 450 and 350 <= mouse[1] <= 400:
-            if click[0] == 1:
                 
 
         if 150 <= mouse[0] <= 450 and 200 <= mouse[1] <= 250:
