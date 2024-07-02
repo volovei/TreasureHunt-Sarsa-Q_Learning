@@ -1,42 +1,26 @@
 import numpy as np
-from environment.treasure_hunt_env import TreasureHuntEnv
 import random
 
 class QLearningAgent:
-    def __init__(self, q_table, env):
-        self.q_table = q_table
+    def __init__(self, q_table, env): # q_table: A q_table do agente, env: TreasureHuntEnv
+        self.q_table = q_table 
         self.env = env
 
-    def next_action(self, epsilon, state):
+    def next_action(self, epsilon, state): # epsilon: A probabilidade de ir para uma exploração random, state: O estado atual do agente
         if random.uniform(0, 1) < epsilon:
             return self.env.action_space.sample()
         else:
             return np.argmax(self.q_table[state])
 
-    def update_q_table(self, state, action, reward, next_state, learning_rate, discount_rate):
+    def update_q_table(self, state, action, reward, next_state, learning_rate, discount_rate): # state: O estado atual do agente, action: A ação tomada, reward: A recompensa recebida, next_state: O próximo estado, learning_rate: A probabilidade de aprender, discount_rate: A probabilidade de desconto para a recompensa futura
         self.q_table[state, action] += learning_rate * (reward + discount_rate * np.max(self.q_table[next_state]) - self.q_table[state, action])
 
     
-    def update_best_q_table(self, q_table):
+    def update_best_q_table(self, q_table): # q_table: A q_table do agente (dar update na melhor q_table entre os agentes)
         self.q_table = q_table
     
-    def get_shortest_path(self, start_row, start_column):
-        current_row, current_column = start_row, start_column
-        shortest_path = [[current_row, current_column]]
-        state = self.env.encode_state([current_row, current_column])
-        
-        while self.env.grid[current_row, current_column] != 'G':
-            action = np.argmax(self.q_table[state])
-            next_state, _, _, _ = self.env.step(action)
-            next_state_decoded = self.env.decode_state(next_state)
-            current_row, current_column = next_state_decoded[0], next_state_decoded[1]
-            shortest_path.append([current_row, current_column])
-            state = self.env.encode_state([current_row, current_column])
-        
-        return shortest_path
 
-if __name__ == "__main__":
-    env = TreasureHuntEnv()
+
 
 
     

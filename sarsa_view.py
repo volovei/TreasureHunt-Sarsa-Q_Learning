@@ -5,7 +5,7 @@ from environment.treasure_hunt_env import TreasureHuntEnv
 from agent.sarsa import SARSAAgent 
 import random
 
-BLOCK_SIZE = 50 # o SARSA está muito fraco comparado ao Q-Learning
+BLOCK_SIZE = 80
 
 pygame.init()
 
@@ -17,14 +17,31 @@ class TreasureHuntView:
         self.agent2 = agent2
         self.window_size = (self.env1.grid_size * BLOCK_SIZE * 2, self.env1.grid_size * BLOCK_SIZE)
         self.screen = pygame.display.set_mode(self.window_size)
-        pygame.display.set_caption("Treasure Hunt - SARSA")
+        self.move_count = 0
+        pygame.display.set_caption("Treasure Hunt - Q_Learning")
 
         # Carregar imagens
         self.ground_image = pygame.image.load("assets/ground.png")
         self.trap_image = pygame.image.load("assets/trap.png")
         self.small_treasure_image = pygame.image.load("assets/small_treasure.png")
-        self.big_treasure_image = pygame.image.load("assets/big_treasure.png")
+        self.big_treasure_image = pygame.image.load("assets/big_treasure4.png")
+        self.small_treasure_image4 = pygame.image.load("assets/small_treasure4.png")
         self.agent_image = pygame.image.load("assets/agent.png")
+        self.border_agent1_image = pygame.image.load("assets/border.png")
+        self.border_agent2_image = pygame.image.load("assets/border.png")
+
+        self.agent_image1 = pygame.image.load("assets/10steps/10steps1.png")
+        self.agent_image2 = pygame.image.load("assets/10steps/10steps2.png")
+        self.agent_image3 = pygame.image.load("assets/10steps/10steps3.png")
+        self.agent_image4 = pygame.image.load("assets/10steps/10steps4.png")
+        self.agent_image5 = pygame.image.load("assets/10steps/10steps5.png")
+        self.agent_image6 = pygame.image.load("assets/10steps/10steps6.png")
+        self.agent_image7 = pygame.image.load("assets/10steps/10steps7.png")
+        self.agent_image8 = pygame.image.load("assets/10steps/10steps8.png")
+        self.agent_image9 = pygame.image.load("assets/10steps/10steps9.png")
+        self.agent_image10 = pygame.image.load("assets/10steps/10steps10.png")
+        self.agent_image11 = pygame.image.load("assets/10steps/10steps11.png")
+
 
         # Redimensionar imagens
         self.ground_image = pygame.transform.scale(self.ground_image, (BLOCK_SIZE, BLOCK_SIZE))
@@ -32,8 +49,24 @@ class TreasureHuntView:
         self.small_treasure_image = pygame.transform.scale(self.small_treasure_image, (BLOCK_SIZE, BLOCK_SIZE))
         self.big_treasure_image = pygame.transform.scale(self.big_treasure_image, (BLOCK_SIZE, BLOCK_SIZE))
         self.agent_image = pygame.transform.scale(self.agent_image, (BLOCK_SIZE, BLOCK_SIZE))
+        self.border_agent1_image = pygame.transform.scale(self.border_agent1_image, ((self.env1.grid_size + 0)  * BLOCK_SIZE, (self.env1.grid_size + 0) * BLOCK_SIZE))
+        self.border_agent2_image = pygame.transform.scale(self.border_agent2_image, ((self.env2.grid_size + 0) * BLOCK_SIZE, (self.env2.grid_size + 0) * BLOCK_SIZE))
+        self.small_treasure_image4 = pygame.transform.scale(self.small_treasure_image4, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image1 = pygame.transform.scale(self.agent_image1, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image2 = pygame.transform.scale(self.agent_image2, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image3 = pygame.transform.scale(self.agent_image3, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image4 = pygame.transform.scale(self.agent_image4, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image5 = pygame.transform.scale(self.agent_image5, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image6 = pygame.transform.scale(self.agent_image6, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image7 = pygame.transform.scale(self.agent_image7, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image8 = pygame.transform.scale(self.agent_image8, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image9 = pygame.transform.scale(self.agent_image9, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image10 = pygame.transform.scale(self.agent_image10, (BLOCK_SIZE, BLOCK_SIZE))
+        self.agent_image11 = pygame.transform.scale(self.agent_image11, (BLOCK_SIZE, BLOCK_SIZE))
 
     def draw_grid(self):
+        font = pygame.font.SysFont(None, 24)
+        
         for x in range(0, self.env1.grid_size):
             for y in range(0, self.env1.grid_size):
                 rect1 = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
@@ -41,43 +74,61 @@ class TreasureHuntView:
                 cell1 = self.env1.grid[x, y]
                 cell2 = self.env2.grid[x, y]
                 
+                # Desenhar chão para ambiente 1 antes de qualquer coisa
+                self.screen.blit(self.ground_image, rect1)
                 # Desenhar ambiente 1
-                if cell1 == 'S':
-                    self.screen.blit(self.ground_image, rect1)
-                elif cell1 == 'H':
+                if cell1 == 'H':
                     self.screen.blit(self.trap_image, rect1)
                 elif cell1 == 'T':
                     self.screen.blit(self.small_treasure_image, rect1)
                 elif cell1 == 'G':
+                    self.screen.blit(self.small_treasure_image, rect1)
+                elif cell1 == 'R':
                     self.screen.blit(self.big_treasure_image, rect1)
-                else:
-                    self.screen.blit(self.ground_image, rect1)
+                elif cell1 == 'L':
+                    self.screen.blit(self.small_treasure_image4, rect1)
                 
+                # Desenhar chão para ambiente 2 antes de qualquer coisa
+                self.screen.blit(self.ground_image, rect2)
                 # Desenhar ambiente 2
-                if cell2 == 'S':
-                    self.screen.blit(self.ground_image, rect2)
-                elif cell2 == 'H':
+                if cell2 == 'H':
                     self.screen.blit(self.trap_image, rect2)
                 elif cell2 == 'T':
                     self.screen.blit(self.small_treasure_image, rect2)
                 elif cell2 == 'G':
+                    self.screen.blit(self.small_treasure_image, rect2)
+                elif cell2 == 'R':
                     self.screen.blit(self.big_treasure_image, rect2)
-                else:
-                    self.screen.blit(self.ground_image, rect2)
+                elif cell2 == 'L':
+                    self.screen.blit(self.small_treasure_image4, rect2)
                 
                 pygame.draw.rect(self.screen, (0, 0, 0), rect1, 1)
                 pygame.draw.rect(self.screen, (0, 0, 0), rect2, 1)
+        
+        # Desenhar bordas decorativas
+        self.screen.blit(self.border_agent1_image, (0, 0))
+        self.screen.blit(self.border_agent2_image, (self.env1.grid_size * BLOCK_SIZE, 0))
+        
+        #texto para Agente 1 e Agente 2
+        text_surface_agent1 = font.render('Agente 1', True, (255, 255, 255))
+        text_surface_agent2 = font.render('Agente 2', True, (255, 255, 255))
+        self.screen.blit(text_surface_agent1, (5, 5))  
+        self.screen.blit(text_surface_agent2, (self.env1.grid_size * BLOCK_SIZE + 5, 5))  
 
     def draw_agents(self):
         # Desenhar agente 1
-        x1, y1 = self.agent1.env.agent_pos
-        rect1 = pygame.Rect(y1 * BLOCK_SIZE, x1 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-        self.screen.blit(self.agent_image, rect1)
-        
-        # Desenhar agente 2
-        x2, y2 = self.agent2.env.agent_pos
-        rect2 = pygame.Rect((y2 + self.env1.grid_size) * BLOCK_SIZE, x2 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-        self.screen.blit(self.agent_image, rect2)
+            x1, y1 = self.agent1.env.agent_pos
+            rect1 = pygame.Rect(y1 * BLOCK_SIZE, x1 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
+            # Escolher a imagem baseada no contador de movimentos do agente 1
+            agent1_image = getattr(self, f'agent_image{self.move_count % 11 + 1}') 
+            self.screen.blit(agent1_image, rect1)
+            
+            # Desenhar agente 2
+            x2, y2 = self.agent2.env.agent_pos
+            rect2 = pygame.Rect((y2 + self.env1.grid_size) * BLOCK_SIZE, x2 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
+            # Escolher a imagem baseada no contador de movimentos do agente 2
+            agent2_image = getattr(self, f'agent_image{self.move_count % 11 + 1}')  
+            self.screen.blit(agent2_image, rect2)
 
     def start_episode(self, epsilon): # tentar fazer com que a função de escolha de spwan funcione
         spawns = [(9, 9), (1, 3), (7, 1), (5, 3), (4, 2)]
@@ -104,6 +155,7 @@ class TreasureHuntView:
 
         self.env1.agent_position = best_spawn1
         self.env2.agent_position = best_spawn2
+
     def run(self, num_episodes=1000, max_steps_per_episode=50):
         epsilon = 0.9
         learning_rate = 0.5

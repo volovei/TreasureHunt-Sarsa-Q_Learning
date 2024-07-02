@@ -17,7 +17,7 @@ def load_gif_frames(gif_path):
         frames.append(pygame.transform.scale(pygame_image, (800, 600)))
     return frames
 
-def main_menu():
+def main_menu(): # Menu principal
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("Treasure Hunt - Main Menu")
     clock = pygame.time.Clock()
@@ -33,7 +33,7 @@ def main_menu():
     gif_frame_count = len(gif_frames)
     current_frame = 0
 
-    while True:
+    while True: # Loop do menu principal
         screen.fill((255, 255, 255))
 
         # Desenhar background
@@ -43,12 +43,12 @@ def main_menu():
         screen.blit(gif_frames[current_frame], (250, 0))
         current_frame = (current_frame + 1) % gif_frame_count
 
-        title_text = font.render("Pipe Hunt", True,(255,255,255), (0, 0, 0))
-        play_qlearning_text = font_small.render("Play with Q-Learning", True, (255,255,255), (0, 0, 0))
-        play_sarsa_text = font_small.render("Play with SARSA", True,(255,255,255), (0, 0, 0))
-        quit_text = font_small.render("Quit", True,(255,255,255), (0, 0, 0))
-        how_to_text = font_small.render("How to Pipe Hunt", True, (255,255,255), (0, 0, 0))
-        options = font_small.render("Options", True, (255,255,255), (0, 0, 0))
+        title_text = font.render("Pipe Hunt", True,(255,255,255), (0, 0, 0)) # titulo do jogo
+        play_qlearning_text = font_small.render("Play with Q-Learning", True, (255,255,255), (0, 0, 0)) # botão para jogar com Q-Learning
+        play_sarsa_text = font_small.render("Play with SARSA", True,(255,255,255), (0, 0, 0)) # botão para jogar com SARSA
+        quit_text = font_small.render("Quit", True,(255,255,255), (0, 0, 0)) # botão para sair
+        how_to_text = font_small.render("How to Pipe Hunt", True, (255,255,255), (0, 0, 0)) # botão para ver como jogar
+        options = font_small.render("Options", True, (255,255,255), (0, 0, 0)) # botão para ver as opções de costumização
 
         screen.blit(how_to_text, (150, 450))
         screen.blit(title_text, (150, 100))
@@ -80,7 +80,7 @@ def main_menu():
                 quit()
                 
 
-        for event in pygame.event.get():
+        for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()

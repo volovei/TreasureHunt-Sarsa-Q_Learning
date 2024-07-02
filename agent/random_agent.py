@@ -1,6 +1,6 @@
 import numpy as np
 
-class RandomAgent:
+class RandomAgent: # se quisermos so movimentos aleatórios
     def __init__(self, action_space):
         self.action_space = action_space
 

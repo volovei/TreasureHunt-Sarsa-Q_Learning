@@ -1,0 +1,3 @@
+Esta pasta serve para guardar os ficheiros de cada RL code: Sarsa e Q_learning 
+
+Nota: O random também fica guardado nesta pasta
