@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from environment.treasure_hunt_env import TreasureHuntEnv
 from agent.q_learning import QLearningAgent
 import random
+import sys
 
 BLOCK_SIZE = 80
 
@@ -130,7 +131,7 @@ class TreasureHuntView:
             agent2_image = getattr(self, f'agent_image{self.move_count % 11 + 1}')  
             self.screen.blit(agent2_image, rect2)
 
-    def start_episode(self, epsilon): # tentar fazer com que a função de escolha de spwan funcione
+    def start_episode(self, epsilon):
         spawns = [(9, 9), (1, 3), (7, 1), (5, 3), (4, 2)]
 
         best_spawn1 = (9, 9)
@@ -142,20 +143,18 @@ class TreasureHuntView:
         else:
             spawn_scores1 = {}
             for spawn in spawns:
-                spawn_scores1[spawn] = sum(self.agent1.q_table[spawn])
+                spawn_scores1[spawn] = self.agent1.q_table[spawn].sum()
 
             best_spawn1 = max(spawn_scores1, key=spawn_scores1.get)
 
             spawn_scores2 = {}
             for spawn in spawns:
-                spawn_scores2[spawn] = sum(self.agent2.q_table[spawn])
+                spawn_scores2[spawn] = self.agent2.q_table[spawn].sum()
 
             best_spawn2 = max(spawn_scores2, key=spawn_scores2.get)
 
-
         self.env1.agent_position = best_spawn1
         self.env2.agent_position = best_spawn2
-
 
     def run(self, num_episodes=1000, max_steps_per_episode=50):
         epsilon = 0.9
@@ -216,7 +215,7 @@ class TreasureHuntView:
                 total_reward2_sum += reward2
 
             if episode > 800:
-                if episode % 50 ==0:
+                if episode % 50 == 0:
                     if total_reward1_sum > total_reward2_sum:
                         Best_q_table_1 += 1
                     elif total_reward1_sum < total_reward2_sum:
@@ -270,15 +269,23 @@ class TreasureHuntView:
         pygame.quit()
 
 if __name__ == "__main__":
+    # Valores padrão
     seed_value = 1  # Definir uma semente para gerar o mesmo mapa para os dois agentes
     grid_size = 10 # Tamanho do grid
     num_treasures = 5 # Número de tesouros
     num_traps = 5 # Número de armadilhas
 
+    # Ler argumentos da linha de comando, se fornecidos
+    if len(sys.argv) > 1:
+        num_treasures = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        num_traps = int(sys.argv[2])
+    if len(sys.argv) > 3:
+        seed_value = int(sys.argv[3])
+
     env1 = TreasureHuntEnv(grid_size=grid_size, num_treasures=num_treasures, num_traps=num_traps, seed=seed_value)
     env2 = TreasureHuntEnv(grid_size=grid_size, num_treasures=num_treasures, num_traps=num_traps, seed=seed_value)
 
-    
     q_table1 = np.zeros((env1.observation_space.n, env1.action_space.n))
     q_table2 = np.zeros((env2.observation_space.n, env2.action_space.n))
     
