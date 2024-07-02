@@ -19,7 +19,11 @@ class TreasureHuntView:
         self.window_size = (self.env1.grid_size * BLOCK_SIZE * 2, self.env1.grid_size * BLOCK_SIZE)
         self.screen = pygame.display.set_mode(self.window_size)
         self.move_count = 0
-        pygame.display.set_caption("Treasure Hunt - Q_Learning")
+        self.episode_number = 0
+        self.step = 0
+        self.total_reward1_per_episode = 0
+        self.total_reward2_per_episode = 0
+        pygame.display.set_caption("Pipe Hunt Hunt - Q_Learning")
 
         # Carregar imagens
         self.ground_image = pygame.image.load("assets/ground.png")
@@ -114,7 +118,17 @@ class TreasureHuntView:
         text_surface_agent1 = font.render('Agente 1', True, (255, 255, 255))
         text_surface_agent2 = font.render('Agente 2', True, (255, 255, 255))
         self.screen.blit(text_surface_agent1, (5, 5))  
-        self.screen.blit(text_surface_agent2, (self.env1.grid_size * BLOCK_SIZE + 5, 5))  
+        self.screen.blit(text_surface_agent2, (self.env1.grid_size * BLOCK_SIZE + 5, 5)) 
+
+        #texto do episódio e recompensa para Agente 1
+        episode_reward_text_agent1 = f'Episódio: {self.episode_number}, Recompensa: {self.total_reward1_per_episode}, Passos: {self.step}'
+        text_surface_episode_reward_agent1 = font.render(episode_reward_text_agent1, True, (255, 255, 255))
+        self.screen.blit(text_surface_episode_reward_agent1, (5, 25))
+
+        episode_reward_steps_text_agent2 = f'Episódio: {self.episode_number}, Recompensa: {self.total_reward2_per_episode}, Passos: {self.step}'
+        text_surface_episode_reward_steps_agent2 = font.render(episode_reward_steps_text_agent2, True, (255, 255, 255))
+        self.screen.blit(text_surface_episode_reward_steps_agent2, (self.env1.grid_size * BLOCK_SIZE + 5, 25))
+          
 
     def draw_agents(self):
         # Desenhar agente 1
@@ -131,30 +145,6 @@ class TreasureHuntView:
             agent2_image = getattr(self, f'agent_image{self.move_count % 11 + 1}')  
             self.screen.blit(agent2_image, rect2)
 
-    def start_episode(self, epsilon):
-        spawns = [(9, 9), (1, 3), (7, 1), (5, 3), (4, 2)]
-
-        best_spawn1 = (9, 9)
-        best_spawn2 = (9, 9)
-
-        if random.uniform(0, 1) < epsilon:
-            best_spawn1 = random.choice(spawns)
-            best_spawn2 = random.choice(spawns)
-        else:
-            spawn_scores1 = {}
-            for spawn in spawns:
-                spawn_scores1[spawn] = sum(self.agent1.q_table[spawn])
-
-            best_spawn1 = max(spawn_scores1, key=spawn_scores1.get)
-
-            spawn_scores2 = {}
-            for spawn in spawns:
-                spawn_scores2[spawn] = sum(self.agent2.q_table[spawn])
-
-            best_spawn2 = max(spawn_scores2, key=spawn_scores2.get)
-
-        self.env1.agent_position = best_spawn1
-        self.env2.agent_position = best_spawn2
 
     def run(self, num_episodes=1000, max_steps_per_episode=50):
         epsilon = 0.9
@@ -166,6 +156,8 @@ class TreasureHuntView:
         total_reward2_sum = 0
         Best_q_table_1 = 0
         Best_q_table_2 = 0
+        self.total_reward1_per_episode = 0
+        self.total_reward2_per_episode = 0
 
         for episode in range(num_episodes):
             state1 = self.env1.reset()
@@ -186,8 +178,8 @@ class TreasureHuntView:
                 if episode == num_episodes - 1:
                     pygame.time.wait(300)
 
-                next_state1, reward1, done1, info1 = self.env1.step(action1)
-                next_state2, reward2, done2, info2 = self.env2.step(action2)
+                next_state1, reward1, done1, self.move_count = self.env1.step(action1)
+                next_state2, reward2, done2, self.move_count = self.env2.step(action2)
                 
                 next_action1 = self.agent1.next_action(epsilon, next_state1)
                 next_action2 = self.agent2.next_action(epsilon, next_state2)
@@ -197,6 +189,9 @@ class TreasureHuntView:
                 
                 total_reward1 += reward1
                 total_reward2 += reward2
+
+                self.total_reward1_per_episode = total_reward1
+                self.total_reward2_per_episode = total_reward2
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -276,11 +271,11 @@ if __name__ == "__main__":
     num_traps = 5 # Número de armadilhas
 
     # Ler argumentos da linha de comando, se fornecidos
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1].isdigit():
         num_treasures = int(sys.argv[1])
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 2 and sys.argv[2].isdigit():
         num_traps = int(sys.argv[2])
-    if len(sys.argv) > 3:
+    if len(sys.argv) > 3 and sys.argv[3].isdigit():
         seed_value = int(sys.argv[3])
 
     env1 = TreasureHuntEnv(grid_size=grid_size, num_treasures=num_treasures, num_traps=num_traps, seed=seed_value)

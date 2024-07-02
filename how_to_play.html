@@ -1,4 +1,4 @@
-<!DOCTYPE html> #Codigo hitml para mostrar como funciona o jogo
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -78,7 +78,6 @@
         <img src="assets/smoke.gif" alt="Options in Pipe Hunt">
         <p>There are several options available to customize the game environment and the agent's behavior:</p>
             <ul>
-                <li><strong>Grid size:</strong> The size of the map can be adjusted to increase or decrease the challenge level.</li>
                 <li><strong>Number of traps:</strong> The number of traps can be set to increase the difficulty of the game.</li>
                 <li><strong>Number of treasures:</strong> The number of treasures can be adjusted to control the game's duration and complexity.</li>
                 <li><strong>Seed value:</strong> The seed value can be set to generate a specific map configuration.</li>
@@ -93,6 +92,31 @@
                 <li> <strong>Draw Grid:</strong> Draws the current state of the environment, including the agents and treasures.</li>
                 <li> <strong>Run:</strong> Runs the agent in the environment until the game is over or the maximum number of episodes is reached.</li>
             </ul>
+
+        <h2>How to open the menu</h2>
+        <p>Click on the menu file and then click on the run icon on the top right corner of the screen to open the menu. From there, you can access the options to customize the game and interact with the agent.</p>
+        <h2>More Information</h2>
+        <p><strong>Folders:</strong></p>
+        <ul>
+            <li><strong>assets:</strong> Contains images and gifs used in the game.</li>
+            <li><strong>agent:</strong> Contains the Sarsa and Q-Learning agents implemented in the game.</li>
+            <ul>
+                <li><strong>q_learning.py:</strong> Contains the Q-Learning agent implementation.</li>
+                <li><strong>sarsa.py:</strong> Contains the Sarsa agent implementation.</li>
+                <li><strong>random_agent.py:</strong> Contains the random agent implementation for comparison.</li>
+            </ul>
+            <li><strong>environment:</strong> Contains the environment and functions to interact with the game.</li>
+            <ul>
+                <li><strong>environment.py:</strong> Contains the environment class and functions.</li>
+            </ul>
+        </ul>
+        <p><strong>Files:</strong></p>
+        <ul>
+            <li><strong>menu.py:</strong> Contains the main menu and functions to interact with the game.</li>
+            <li><strong>how_to_play.html:</strong> Contains the guide on how to play Pipe Hunt.</li>
+            <li><strong>q_learning_view</strong> Contains the Q-Learning agent view.</li>
+            <li><strong>sarsa_view</strong> Contains the Sarsa agent view.</li>
+        </ul>
         <h2>Good Luck and Have Fun!</h2>
     </div>
 </body>

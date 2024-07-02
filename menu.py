@@ -39,7 +39,7 @@ def open_options_dialog():
 
 def main_menu():
     screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("Treasure Hunt - Main Menu")
+    pygame.display.set_caption("Pipe Hunt - Main Menu")
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 74)
     font_small = pygame.font.Font(None, 50)

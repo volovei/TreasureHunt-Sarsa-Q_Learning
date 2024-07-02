@@ -19,7 +19,11 @@ class TreasureHuntView:
         self.window_size = (self.env1.grid_size * BLOCK_SIZE * 2, self.env1.grid_size * BLOCK_SIZE)
         self.screen = pygame.display.set_mode(self.window_size)
         self.move_count = 0
-        pygame.display.set_caption("Treasure Hunt - Q_Learning")
+        self.episode_number = 0
+        self.step = 0
+        self.total_reward1_per_episode = 0
+        self.total_reward2_per_episode = 0
+        pygame.display.set_caption("Pipe Hunt - Q_Learning")
 
         # Carregar imagens
         self.ground_image = pygame.image.load("assets/ground.png")
@@ -67,7 +71,7 @@ class TreasureHuntView:
 
     def draw_grid(self):
         font = pygame.font.SysFont(None, 24)
-        
+   
         for x in range(0, self.env1.grid_size):
             for y in range(0, self.env1.grid_size):
                 rect1 = pygame.Rect(y * BLOCK_SIZE, x * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
@@ -114,7 +118,17 @@ class TreasureHuntView:
         text_surface_agent1 = font.render('Agente 1', True, (255, 255, 255))
         text_surface_agent2 = font.render('Agente 2', True, (255, 255, 255))
         self.screen.blit(text_surface_agent1, (5, 5))  
-        self.screen.blit(text_surface_agent2, (self.env1.grid_size * BLOCK_SIZE + 5, 5))  
+        self.screen.blit(text_surface_agent2, (self.env1.grid_size * BLOCK_SIZE + 5, 5)) 
+
+        #texto do episódio e recompensa para Agente 1
+        episode_reward_text_agent1 = f'Episódio: {self.episode_number}, Recompensa: {self.total_reward1_per_episode}, Passos: {self.step}'
+        text_surface_episode_reward_agent1 = font.render(episode_reward_text_agent1, True, (255, 255, 255))
+        self.screen.blit(text_surface_episode_reward_agent1, (5, 25))
+
+        episode_reward_steps_text_agent2 = f'Episódio: {self.episode_number}, Recompensa: {self.total_reward2_per_episode}, Passos: {self.step}'
+        text_surface_episode_reward_steps_agent2 = font.render(episode_reward_steps_text_agent2, True, (255, 255, 255))
+        self.screen.blit(text_surface_episode_reward_steps_agent2, (self.env1.grid_size * BLOCK_SIZE + 5, 25))
+          
 
     def draw_agents(self):
         # Desenhar agente 1
@@ -166,21 +180,27 @@ class TreasureHuntView:
         total_reward2_sum = 0
         Best_q_table_1 = 0
         Best_q_table_2 = 0
+        self.total_reward1_per_episode = 0
+        self.total_reward2_per_episode = 0
+
 
         for episode in range(num_episodes):
+            self.episode_number = episode
             state1 = self.env1.reset()
             state2 = self.env2.reset()
             total_reward1 = 0
             total_reward2 = 0
             done1 = False
             done2 = False
+            self.total_reward1_per_episode = 0
+            self.total_reward2_per_episode = 0
 
             for step in range(max_steps_per_episode):
+                self.step = step
                 self.screen.fill((255, 255, 255))
                 self.draw_grid()
                 self.draw_agents()
                 pygame.display.flip()
-                pygame.time.wait(100)
 
                 if episode == num_episodes - 1:
                     pygame.time.wait(300)
@@ -196,6 +216,9 @@ class TreasureHuntView:
                 
                 total_reward1 += reward1
                 total_reward2 += reward2
+
+                self.total_reward1_per_episode += reward1
+                self.total_reward2_per_episode += reward2
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -276,11 +299,11 @@ if __name__ == "__main__":
     num_traps = 5 # Número de armadilhas
 
     # Ler argumentos da linha de comando, se fornecidos
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1].isdigit():
         num_treasures = int(sys.argv[1])
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 2 and sys.argv[2].isdigit():
         num_traps = int(sys.argv[2])
-    if len(sys.argv) > 3:
+    if len(sys.argv) > 3 and sys.argv[3].isdigit():
         seed_value = int(sys.argv[3])
 
     env1 = TreasureHuntEnv(grid_size=grid_size, num_treasures=num_treasures, num_traps=num_traps, seed=seed_value)
