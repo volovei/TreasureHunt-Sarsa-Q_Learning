@@ -38,7 +38,7 @@ class TreasureHuntEnv(gym.Env): # Ambiente do jogo
         return [state // self.grid_size, state % self.grid_size] 
 
     def generate_random_grid(self): # gera um mapa aleatorio
-        grid = np.full((self.grid_size, self.grid_size), 'F', dtype=str)  # 'F' representa uma célula chão/floor
+        grid = np.full((self.grid_size, self.grid_size), 'F', dtype=str)  # 'F' representa um state chão/floor
 
         # Posicionar tesouros
         positions = np.random.choice(self.grid_size * self.grid_size, size=self.num_treasures + self.num_traps, replace=False) # Posições aleatórias para tesouros e armadilhas
@@ -58,6 +58,22 @@ class TreasureHuntEnv(gym.Env): # Ambiente do jogo
         grid[pos_g // self.grid_size, pos_g % self.grid_size] = 'G'
 
         return grid
+    
+    '''
+    #Função não utilizada - servia de ajuda para calcular a distância do agente ao tesouro mais próximo e assim aumentar a capacidade de o agente encontrar os tesouros mas não foi implementada no jogo final porque parecia cheats
+
+    def distance_to_nearest_treasure(self):
+        distances = []
+        for x in range(self.grid_size):
+            for y in range(self.grid_size):
+                if self.grid[x, y] in ['T', 'G']:
+                    distance = abs(self.agent_pos[0] - x) + abs(self.agent_pos[1] - y)
+                    distances.append(distance)
+        return min(distances) if distances else 0
+
+    #Para episodios mais pequenas aumenta imenso a eficacia do agente 
+    
+    '''
 
 
     def step(self, action):

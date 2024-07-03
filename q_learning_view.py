@@ -144,38 +144,42 @@ class TreasureHuntView:
             # Escolher a imagem baseada no contador de movimentos do agente 2
             agent2_image = getattr(self, f'agent_image{self.move_count % 11 + 1}')  
             self.screen.blit(agent2_image, rect2)
+            '''
 
-    def start_episode(self, epsilon):
-        spawns = [(9, 9), (1, 3), (7, 1), (5, 3), (4, 2)]
+            def start_episode(self, epsilon): #Inutlizada mas o objetivo da mesma era de dar ao agente a opção de escolha do spwan para otimização da q_table e das ações futuras do agente
+                spawns = [(9, 9), (1, 3), (7, 1), (5, 3), (4, 2)]
 
-        best_spawn1 = (9, 9)
-        best_spawn2 = (9, 9)
+                best_spawn1 = (9, 9)
+                best_spawn2 = (9, 9)
 
-        if random.uniform(0, 1) < epsilon:
-            best_spawn1 = random.choice(spawns)
-            best_spawn2 = random.choice(spawns)
-        else:
-            spawn_scores1 = {}
-            for spawn in spawns:
-                spawn_scores1[spawn] = self.agent1.q_table[spawn].sum()
+                if random.uniform(0, 1) < epsilon:
+                    best_spawn1 = random.choice(spawns)
+                    best_spawn2 = random.choice(spawns)
+                else:
+                    spawn_scores1 = {}
+                    for spawn in spawns:
+                        spawn_scores1[spawn] = self.agent1.q_table[spawn].sum()
 
-            best_spawn1 = max(spawn_scores1, key=spawn_scores1.get)
+                    best_spawn1 = max(spawn_scores1, key=spawn_scores1.get)
 
-            spawn_scores2 = {}
-            for spawn in spawns:
-                spawn_scores2[spawn] = self.agent2.q_table[spawn].sum()
+                    spawn_scores2 = {}
+                    for spawn in spawns:
+                        spawn_scores2[spawn] = self.agent2.q_table[spawn].sum()
 
-            best_spawn2 = max(spawn_scores2, key=spawn_scores2.get)
+                    best_spawn2 = max(spawn_scores2, key=spawn_scores2.get)
 
-        self.env1.agent_position = best_spawn1
-        self.env2.agent_position = best_spawn2
+                self.env1.agent_position = best_spawn1
+                self.env2.agent_position = best_spawn2
+            
+            
+            '''
+    
 
-    def run(self, num_episodes=1000, max_steps_per_episode=50):
+    def run(self, num_episodes=1000, max_steps_per_episode=50): #Função principal que roda o ambiente e os agentes
         epsilon = 0.9
         learning_rate = 0.5
         rewards_list_agent1 = []
         rewards_list_agent2 = []
-        q_table_list = []
         total_reward1_sum = 0
         total_reward2_sum = 0
         Best_q_table_1 = 0
@@ -184,7 +188,7 @@ class TreasureHuntView:
         self.total_reward2_per_episode = 0
 
 
-        for episode in range(num_episodes):
+        for episode in range(num_episodes): #Loop dos episodios
             self.episode_number = episode
             state1 = self.env1.reset()
             state2 = self.env2.reset()
@@ -195,7 +199,7 @@ class TreasureHuntView:
             self.total_reward1_per_episode = 0
             self.total_reward2_per_episode = 0
 
-            for step in range(max_steps_per_episode):
+            for step in range(max_steps_per_episode): #Loop dos passos
                 self.step = step
                 self.screen.fill((255, 255, 255))
                 self.draw_grid()
@@ -233,11 +237,11 @@ class TreasureHuntView:
 
 
 
-            if episode > 700:
+            if episode > 700: #soma as rewards para depois verificar qual q_table é a melhor e atualizar a mesma
                 total_reward1_sum += reward1
                 total_reward2_sum += reward2
 
-            if episode > 800:
+            if episode > 800: # Verificar qual q_table é a melhor quando os episodios sao maiores que 800 e de 50 em 50 episodios
                 if episode % 50 == 0:
                     if total_reward1_sum > total_reward2_sum:
                         Best_q_table_1 += 1
@@ -247,7 +251,7 @@ class TreasureHuntView:
                         Best_q_table_1 += 1
                         Best_q_table_2 += 1
 
-                if episode % 100 == 0:
+                if episode % 100 == 0: # Atualiza a melhor q_table de 100 a 100 episodios
                     if Best_q_table_1 < Best_q_table_2:
                         self.agent1.update_best_q_table(self.agent2.q_table)
                         total_reward1_sum = 0
@@ -258,8 +262,7 @@ class TreasureHuntView:
                         total_reward2_sum = 0
                   
 
-            if episode % 100 == 0:
-                q_table_list.append(self.agent1.q_table)
+            if episode % 100 == 0: # serve para diminuir ou aumentar os valores de epsilon e learning_rate ao longo dos episodios (de 100 em 100 episodios)
                 if epsilon > 0 and episode > 1:
                     epsilon -= 0.1
             if learning_rate > 0.2 and episode > 1 and episode % 100 == 0:
@@ -267,7 +270,7 @@ class TreasureHuntView:
             elif learning_rate <= 0.2:
                     learning_rate = 0.1
 
-            if episode == num_episodes - 1:
+            if episode == num_episodes - 1: #ultimo episodio 100% q_table
                 epsilon = 0
 
             rewards_list_agent1.append(total_reward1)
@@ -278,7 +281,7 @@ class TreasureHuntView:
         print(f"Episódio: Último - Agente 1 - Total Reward: {total_reward1}")
         print(f"Episódio: Último - Agente 2 - Total Reward: {total_reward2}")
 
-        # Plotar recompensas
+        # Mostrar gráfico das recompensas
         plt.figure(figsize=(10, 5))
         plt.plot(range(1, num_episodes + 1), rewards_list_agent1, marker='o', linestyle='-', color='b', label='Agente 1')
         plt.plot(range(1, num_episodes + 1), rewards_list_agent2, marker='o', linestyle='-', color='r', label='Agente 2')
